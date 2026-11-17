@@ -127,6 +127,9 @@ export default function App() {
               setResumes={setResumes}
               isLoading={isResumeLoading}
               setIsLoading={setIsResumeLoading}
+              onTriggerMatch={handleTriggerMatch}
+              canMatch={Boolean(parsedJd && resumes.length > 0)}
+              isMatching={isMatchingLoading}
             />
           </div>
         </div>

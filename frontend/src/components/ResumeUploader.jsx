@@ -8,7 +8,8 @@ export default function ResumeUploader({
   isLoading,
   setIsLoading,
   onTriggerMatch,
-  canMatch
+  canMatch,
+  isMatching
 }) {
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState(null);
@@ -233,10 +234,10 @@ export default function ResumeUploader({
 
         <button
           onClick={onTriggerMatch}
-          disabled={!canMatch || isLoading}
+          disabled={!canMatch || isLoading || isMatching}
           className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-indigo-500/20 hover:shadow-indigo-500/30 transition-all flex items-center space-x-2"
         >
-          {isLoading ? (
+          {isMatching ? (
             <>
               <RefreshCw className="w-4 h-4 animate-spin" />
               <span>Analyzing & Ranking...</span>
