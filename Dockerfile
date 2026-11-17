@@ -18,7 +18,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python requirements
+# Optimize for cloud memory: install lightweight CPU-only PyTorch first
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+
+# Install remaining Python requirements
 COPY backend/requirements.txt ./backend/
 RUN pip install --no-cache-dir -r backend/requirements.txt
 
@@ -28,7 +31,7 @@ COPY backend/ ./backend/
 # Copy built frontend assets from Stage 1 into the location FastAPI expects
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 
-# Expose port
+# Expose port (Render automatically sets $PORT)
 ENV PORT=8000
 EXPOSE 8000
 
