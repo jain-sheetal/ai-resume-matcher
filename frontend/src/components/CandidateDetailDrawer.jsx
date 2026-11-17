@@ -70,26 +70,26 @@ export default function CandidateDetailDrawer({ candidate, jobDescription, onClo
                   </span>
                 </div>
                 <p className="text-xs text-slate-300 mt-2 max-w-sm">
-                  Calculated using Sentence Transformers neural embeddings, skill ontology taxonomy, and experience duration weighting.
+                  Calculated using Sentence Transformers neural embeddings, skill ontology taxonomy, and experience duration evaluation.
                 </p>
               </div>
 
-              {/* Mini radar / breakdown chips */}
+              {/* Mini breakdown chips */}
               <div className="grid grid-cols-2 gap-2 w-full sm:w-auto">
                 <div className="p-2.5 bg-white/10 rounded-xl text-center backdrop-blur-xs">
-                  <span className="text-[10px] uppercase font-bold text-slate-300 block">Skills (40%)</span>
+                  <span className="text-[10px] uppercase font-bold text-slate-300 block">Skills</span>
                   <span className="text-sm font-bold text-white">{sb.skills_score}%</span>
                 </div>
                 <div className="p-2.5 bg-white/10 rounded-xl text-center backdrop-blur-xs">
-                  <span className="text-[10px] uppercase font-bold text-slate-300 block">Semantic (35%)</span>
+                  <span className="text-[10px] uppercase font-bold text-slate-300 block">Semantic</span>
                   <span className="text-sm font-bold text-white">{sb.semantic_score}%</span>
                 </div>
                 <div className="p-2.5 bg-white/10 rounded-xl text-center backdrop-blur-xs">
-                  <span className="text-[10px] uppercase font-bold text-slate-300 block">Experience (20%)</span>
+                  <span className="text-[10px] uppercase font-bold text-slate-300 block">Experience</span>
                   <span className="text-sm font-bold text-white">{sb.experience_score}%</span>
                 </div>
                 <div className="p-2.5 bg-white/10 rounded-xl text-center backdrop-blur-xs">
-                  <span className="text-[10px] uppercase font-bold text-slate-300 block">Education (5%)</span>
+                  <span className="text-[10px] uppercase font-bold text-slate-300 block">Education</span>
                   <span className="text-sm font-bold text-white">{sb.education_score}%</span>
                 </div>
               </div>

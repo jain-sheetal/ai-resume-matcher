@@ -1,7 +1,7 @@
 import React from 'react';
-import { Target, Sliders, Cpu, Sparkles, BookOpen } from 'lucide-react';
+import { Target, Cpu, BookOpen } from 'lucide-react';
 
-export default function Navbar({ onOpenWeights, onOpenDocs }) {
+export default function Navbar({ onOpenDocs }) {
   return (
     <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -31,15 +31,6 @@ export default function Navbar({ onOpenWeights, onOpenDocs }) {
             <Cpu className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
             <span>Embedding: <strong className="text-slate-900">all-MiniLM-L6-v2</strong></span>
           </div>
-
-          <button
-            onClick={onOpenWeights}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors"
-            title="Configure Algorithm Weights"
-          >
-            <Sliders className="w-3.5 h-3.5 text-indigo-600" />
-            <span className="hidden sm:inline">Scoring Weights</span>
-          </button>
 
           <button
             onClick={onOpenDocs}
