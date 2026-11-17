@@ -55,23 +55,23 @@ export default function DocsModal({ onClose }) {
           <div>
             <h4 className="font-bold text-sm text-slate-900 mb-1 flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-emerald-600" />
-              3. Multi-Criteria Composite Scoring Formula
+              3. Multi-Criteria Composite Evaluation
             </h4>
             <div className="p-3 bg-blue-50/70 border border-blue-200 rounded-xl font-mono text-xs text-blue-900 font-bold">
-              Overall Score = (0.40 × SkillScore) + (0.35 × SemanticScore) + (0.20 × ExperienceScore) + (0.05 × EducationScore)
+              Overall Score = Composite(Technical Skills, Semantic Embedding, Experience Duration, Education)
             </div>
             <div className="grid grid-cols-2 gap-2 mt-2">
               <div className="p-2 bg-slate-50 border rounded-lg">
-                <strong>Skill Match (40%):</strong> Matched skills / Required skills with bonus for additional versatility.
+                <strong>Technical Skills:</strong> Matched skills vs Required skills with bonus for additional versatility.
               </div>
               <div className="p-2 bg-slate-50 border rounded-lg">
-                <strong>Semantic Similarity (35%):</strong> Dense contextual embedding similarity (0-100%).
+                <strong>Semantic Similarity:</strong> Dense contextual embedding similarity (0-100%).
               </div>
               <div className="p-2 bg-slate-50 border rounded-lg">
-                <strong>Experience (20%):</strong> Candidate years vs JD minimum tenure curve.
+                <strong>Experience:</strong> Chronological tenure vs JD minimum requirement.
               </div>
               <div className="p-2 bg-slate-50 border rounded-lg">
-                <strong>Education (5%):</strong> Degree level qualification check.
+                <strong>Education:</strong> Academic degree level qualification baseline.
               </div>
             </div>
           </div>
