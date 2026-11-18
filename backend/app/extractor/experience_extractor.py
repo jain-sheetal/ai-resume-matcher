@@ -32,9 +32,9 @@ def get_current_year_and_fraction() -> Tuple[int, float]:
     return year, year + month_fraction
 
 def extract_years_from_explicit_mentions(text: str) -> List[float]:
-    """Look for statements like '5+ years of experience', '3 years working with...'"""
+    """Look for statements like '5+ years of experience', '3.5 years of hands-on experience'."""
     patterns = [
-        r'(\d+(?:\.\d+)?)\+?\s*(?:years?|yrs?)(?:\s+of)?\s+(?:experience|exp|background|expertise)',
+        r'(\d+(?:\.\d+)?)\+?\s*(?:years?|yrs?)(?:\s+of)?(?:\s+(?:hands-on|professional|industry|relevant|practical|work))?\s+(?:experience|exp|background|expertise)',
         r'(?:experience|exp):\s*(\d+(?:\.\d+)?)\+?\s*(?:years?|yrs?)',
         r'over\s+(\d+(?:\.\d+)?)\s*(?:years?|yrs?)',
     ]
@@ -159,10 +159,18 @@ def extract_experience(text: str) -> Tuple[CandidateExperience, str]:
 
     explicit_claimed = max(explicit_years) if explicit_years else None
 
-    # Reconcile experience
+    # Reconcile experience: Ground truth is verifiable chronological timeline.
+    # Explicit claims must not blindly override verifiable employment dates if they deviate significantly.
     if timeline_years > 0 and explicit_claimed is not None:
-        total_years = max(timeline_years, explicit_claimed)
-        confidence = "High"
+        if abs(explicit_claimed - timeline_years) <= 1.5:
+            # Consistent with timeline (e.g. minor month rounding): reconcile safely
+            total_years = max(timeline_years, explicit_claimed)
+            confidence = "High"
+        else:
+            # Explicit claim deviates significantly (>1.5 yrs) from verifiable dates:
+            # Trust verifiable chronological timeline over unverified claims to prevent resume inflation.
+            total_years = timeline_years
+            confidence = "Medium"
     elif timeline_years > 0:
         total_years = timeline_years
         confidence = "High"

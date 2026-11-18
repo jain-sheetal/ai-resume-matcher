@@ -1,6 +1,7 @@
 import re
 from typing import List, Optional, Tuple
 from app.extractor.skill_extractor import extract_skills_from_text
+from app.extractor.skill_taxonomy import get_canonical_skill
 from app.models.schemas import ParsedJobDescription
 
 EXP_PATTERNS = [
@@ -54,17 +55,14 @@ def partition_mandatory_and_preferred_skills(text: str, all_skills: List[str]) -
     based on section headers in the Job Description.
     """
     lines = text.split("\n")
-    mandatory_skills = []
-    preferred_skills = []
-
-    current_mode = "mandatory"
-    section_map = {"mandatory": [], "preferred": []}
+    current_mode = "overview"
+    section_map = {"overview": [], "mandatory": [], "preferred": []}
 
     for line in lines:
         clean = line.strip().lower()
         if any(h in clean for h in ["preferred", "nice to have", "plus", "bonus", "good to have", "desired"]):
             current_mode = "preferred"
-        elif any(h in clean for h in ["required", "requirements", "qualifications", "must have", "minimum", "what you need"]):
+        elif any(h in clean for h in ["required", "requirements", "qualifications", "must have", "minimum", "what you need", "mandatory", "core"]):
             current_mode = "mandatory"
 
         section_map[current_mode].append(line)
@@ -73,11 +71,15 @@ def partition_mandatory_and_preferred_skills(text: str, all_skills: List[str]) -
     preferred_text = "\n".join(section_map["preferred"])
 
     preferred_extracted = set(extract_skills_from_text(preferred_text)) if preferred_text else set()
-    mandatory_extracted = set(extract_skills_from_text(mandatory_text)) if mandatory_text else set(all_skills)
+    mandatory_extracted = set(extract_skills_from_text(mandatory_text)) if mandatory_text else set()
 
-    # Disjoint partition
-    final_preferred = [s for s in all_skills if s in preferred_extracted and s not in mandatory_extracted]
-    final_mandatory = [s for s in all_skills if s not in final_preferred]
+    if mandatory_extracted:
+        final_mandatory = [s for s in all_skills if s in mandatory_extracted]
+        final_preferred = [s for s in all_skills if s not in final_mandatory and (s in preferred_extracted or s in all_skills)]
+    else:
+        # Fallback if no explicit section headers found: treat all as mandatory
+        final_preferred = [s for s in all_skills if s in preferred_extracted and s not in mandatory_extracted]
+        final_mandatory = [s for s in all_skills if s not in final_preferred]
 
     # If all ended up as preferred (rare), mark all as mandatory
     if not final_mandatory and all_skills:
@@ -100,7 +102,8 @@ def parse_job_description(
     # Extract all skills
     auto_skills = extract_skills_from_text(text)
     if custom_skills:
-        combined_skills = sorted(list(set(auto_skills + [s.title() for s in custom_skills])))
+        canonical_custom = [get_canonical_skill(s) for s in custom_skills]
+        combined_skills = sorted(list(set(auto_skills + canonical_custom)))
     else:
         combined_skills = auto_skills
 
