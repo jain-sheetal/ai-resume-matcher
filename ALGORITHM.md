@@ -1,83 +1,126 @@
-# Technical Approach & AI Matching Methodology
+# Technical Approach & AI Matching Methodology (MatchPro AI)
 
-## 1. Overview
-The **MatchPro AI** matching engine uses a hybrid architecture combining:
-1. **Contextual Semantic Embeddings** via Sentence Transformers (`all-MiniLM-L6-v2`)
-2. **Canonical Skill Ontology & Alias Taxonomy** with boundary-aware phrase matching
-3. **Chronological Experience Timeline & Duration Resolution**
-4. **Transparent Explainable AI (XAI) Rationale Generation**
+## 1. Overview & Architecture Philosophy
+**MatchPro AI** implements a hybrid scoring engine designed for automated resume screening and candidate ranking. Rather than relying on naive substring search (which produces false positives like matching `"Go"` in `"Good"`) or slow, non-deterministic external LLM APIs, our architecture combines:
+1. **Contextual Semantic Embeddings** via Sentence Transformers (`all-MiniLM-L6-v2`) on CPU.
+2. **Controlled Skill-Equivalence Ontology (250+ canonical skills)** with boundary-aware regex assertions `(?<![a-zA-Z0-9])` and symbol safety (`C++`, `C#`, `.NET`).
+3. **Context-Aware Evidence Classification**: Classifying requirements into *Strong Match*, *Partial Match*, *Related Skill*, *Missing*, and *Insufficient Evidence* linked directly to extracted resume sentences.
+4. **Non-Overlapping Chronological Interval Merging** for verifiable candidate tenure.
+5. **Multi-Factor Extraction Confidence Ratings** (High, Medium, Low) based on empirical document evidence.
+6. **Transparent Explainable AI (XAI)** decision rationale.
 
 ---
 
 ## 2. Core Scoring Formula
 
-The overall candidate matching score $S_{\text{overall}} \in [0, 100]$ is computed as a weighted combination of four distinct criteria:
+The overall candidate matching score $S_{\text{overall}} \in [0.0, 100.0]$ is computed as a deterministic, weighted composite:
 
 $$S_{\text{overall}} = w_{\text{skill}} \cdot S_{\text{skill}} + w_{\text{semantic}} \cdot S_{\text{semantic}} + w_{\text{exp}} \cdot S_{\text{exp}} + w_{\text{edu}} \cdot S_{\text{edu}}$$
 
-Subject to:
+### Default Recruiter Weights
 $$\sum_{i} w_i = 1.0, \quad w_i \ge 0$$
 
-### Default Recruiter Weights
-| Component | Weight ($w$) | Metric | Purpose |
-| :--- | :--- | :--- | :--- |
-| **Technical Skill Overlap** ($S_{\text{skill}}$) | **0.40** (40%) | Canonical skill coverage & aliases | Evaluates core technical prerequisites |
-| **Semantic Similarity** ($S_{\text{semantic}}$) | **0.35** (35%) | Sentence-BERT Cosine Similarity | Measures contextual & domain relevance |
-| **Experience Tenure** ($S_{\text{exp}}$) | **0.20** (20%) | Candidate years vs JD minimum | Evaluates professional seniority |
-| **Education Qualification** ($S_{\text{edu}}$) | **0.05** (5%) | Degree match (B.S., M.S., Ph.D.) | Academic baseline evaluation |
-
-> *Note: Recruiters can dynamically adjust these weights in the UI according to hiring priorities (e.g. prioritizing experience for Senior roles or semantic versatility for Research roles).*
+| Component | Default Weight ($w$) | Metric | Purpose |
+| :--- | :---: | :--- | :--- |
+| **Technical Skills** ($S_{\text{skill}}$) | **0.40** (40%) | Mandatory & preferred requirements with evidence | Evaluates technical prerequisite mastery |
+| **Semantic AI** ($S_{\text{semantic}}$) | **0.35** (35%) | Sentence-BERT Cosine Similarity | Measures contextual & domain overlap |
+| **Experience Tenure** ($S_{\text{exp}}$) | **0.20** (20%) | Candidate non-overlapping yrs vs JD min | Evaluates professional seniority |
+| **Education Qualification** ($S_{\text{edu}}$) | **0.05** (5%) | Verified degree qualification baseline | Academic baseline evaluation |
 
 ---
 
 ## 3. Algorithmic Breakdown
 
-### 3.1. Contextual Semantic Similarity ($S_{\text{semantic}}$)
-Keyword search fails when candidates describe their work with different phrasing than the job posting (e.g., *"Engineered resilient microservices with asynchronous endpoints"* vs *"Backend REST API developer"*).
+### 3.1. Dense Contextual Embeddings ($S_{\text{semantic}}$)
+Keyword search fails when candidate narratives use different phrasing than the job posting:
+* *Example:* *"Engineered resilient microservices with asynchronous endpoints"* $\leftrightarrow$ *"Backend REST API developer"*.
 
-To capture latent semantic meaning, we employ **Sentence-BERT (`all-MiniLM-L6-v2`)**:
-1. Input texts (JD requirements context and Resume experience narratives) are tokenized and passed through a 6-layer MiniLM transformer.
-2. Mean pooling over token embeddings produces a normalized 384-dimensional dense vector $\mathbf{u}, \mathbf{v} \in \mathbb{R}^{384}$.
-3. Cosine similarity is computed:
+**Sentence-BERT Pipeline:**
+1. Text streams (Job Description context and Candidate project/work histories) are tokenized and processed through a 6-layer MiniLM transformer.
+2. Mean pooling over token embeddings produces normalized 384-dimensional dense vectors $\mathbf{u}, \mathbf{v} \in \mathbb{R}^{384}$ such that $\|\mathbf{u}\|_2 = 1.0, \|\mathbf{v}\|_2 = 1.0$.
+3. Cosine similarity is computed via dot product:
+   $$\text{Cosine Similarity}(\mathbf{u}, \mathbf{v}) = \sum_{i=1}^{384} u_i v_i$$
+4. Clamped to $[0.0, 1.0]$ and scaled:
+   $$S_{\text{semantic}} = \text{round}(\min(100.0, \max(0.0, \text{Cosine Similarity} \times 100.0)), 1)$$
 
-$$\text{Cosine Similarity}(\mathbf{u}, \mathbf{v}) = \frac{\mathbf{u} \cdot \mathbf{v}}{\|\mathbf{u}\|_2 \|\mathbf{v}\|_2} = \frac{\sum_{i=1}^{384} u_i v_i}{\sqrt{\sum_{i=1}^{384} u_i^2} \sqrt{\sum_{i=1}^{384} v_i^2}}$$
-
-4. The raw similarity $\in [0, 1]$ is scaled:
-$$S_{\text{semantic}} = \min(100.0, \max(0.0, \text{Cosine Similarity} \times 100))$$
-
-### 3.2. Skill Ontology & Alias Taxonomy ($S_{\text{skill}}$)
-A naive substring search creates false positives (e.g., matching `"Go"` in `"Good"` or `"C"` in `"Cat"`). Our system addresses this through:
-1. **Canonical Taxonomy**: Maps 250+ tech skills to canonical forms.
-   - Example: `["react.js", "reactjs", "react"]` $\rightarrow$ `React`
-   - Example: `["k8s", "kubernetes"]` $\rightarrow$ `Kubernetes`
-   - Example: `["aws", "amazon web services"]` $\rightarrow$ `AWS`
-2. **Boundary-Aware Regex Matching**:
-   Using `(?<![a-zA-Z0-9])` and `(?![a-zA-Z0-9])` with custom handling for symbols (`C++`, `C#`, `.NET`).
-3. **Overlap Computation**:
-   $$\text{Base Score} = \frac{|\mathcal{S}_{\text{candidate}} \cap \mathcal{S}_{\text{required}}|}{|\mathcal{S}_{\text{required}}|} \times 100$$
-4. **Additional Versatility Bonus**:
-   Candidates possessing additional relevant skills receive up to $+5\%$ bonus:
-   $$S_{\text{skill}} = \min\left(100.0, \text{Base Score} + \min(5.0, |\mathcal{S}_{\text{additional}}| \times 0.5)\right)$$
-
-### 3.3. Experience Duration & Timeline Resolution ($S_{\text{exp}}$)
-Accurately determining years of experience requires resolving both explicit claims and chronological work histories:
-1. **Explicit Extraction**: Parses statements like *"5+ years of experience in software engineering"*.
-2. **Chronological Interval Extraction**: Parses work dates (e.g., `Jan 2021 – Present`, `2018 – 2021`).
-3. **Non-Overlapping Interval Merging**:
-   Sorts intervals $[t_{\text{start}}^{(i)}, t_{\text{end}}^{(i)}]$ and merges overlapping ranges to avoid double-counting concurrent or overlapping positions:
-   $$\Delta t_{\text{total}} = \sum_{k} (t_{\text{end}}^{(k)} - t_{\text{start}}^{(k)})$$
-4. **Score Scaling**:
-   - If $Y_{\text{candidate}} \ge Y_{\text{required}}$: Score $= 100.0$
-   - If $Y_{\text{candidate}} < Y_{\text{required}}$:
-     $$S_{\text{exp}} = \left(\frac{Y_{\text{candidate}}}{Y_{\text{required}}}\right)^{0.85} \times 100$$
-   *(The progressive $0.85$ exponent avoids an overly punitive cliff for candidates just under the threshold while appropriately reflecting the seniority gap).*
+**Engine Health & Fallback Transparency:**
+The system caches `all-MiniLM-L6-v2` locally for offline execution. If the deep learning runtime is unavailable, it initializes a verified `TfidfVectorizer(ngram_range=(1,2))` with explicit diagnostics exposed at `GET /health` and `GET /api/match/diagnostics`. It **never silently presents TF-IDF results as semantic AI without flagging `is_fallback: True`**.
 
 ---
 
-## 4. Explainable AI (XAI) Architecture
+### 3.2. Context-Aware Skill Matching & Controlled Equivalences ($S_{\text{skill}}$)
 
-For every candidate, the engine outputs an explainable decision structure:
-- **Verdict**: Overall categorization (`Strong Match`, `Good Potential`, `Moderate Fit`, `Low Alignment`).
-- **Strengths**: Specific positive drivers (e.g., *"Exceeds minimum tenure: 5.2 yrs vs 4.0 yrs required (+1.2 yrs buffer)"*, *"Possesses 14 of 19 core skills (74%)"*).
-- **Gaps**: Explicitly identified missing requirements (e.g., *"Missing required skills: Kubernetes, AWS"*).
-- **Semantic Narrative**: Contextual explanation of domain alignment.
+#### A. Controlled Equivalence Mapping
+To ensure semantic equivalence without false drift, the engine maintains controlled mappings:
+* `React.js`, `ReactJS`, `React Frontend` $\leftrightarrow$ `React`
+* `Postgres`, `PgSQL`, `PostgreSQL Database` $\leftrightarrow$ `PostgreSQL`
+* `FastAPI Framework`, `Asynchronous Python API` $\leftrightarrow$ `FastAPI`
+* `ML`, `Applied Machine Learning`, `Statistical Modeling` $\leftrightarrow$ `Machine Learning`
+* `CI/CD`, `Continuous Integration`, `GitHub Actions`, `Jenkins` $\leftrightarrow$ `CI/CD`
+
+#### B. Requirement Match Classification Tiers
+For every JD requirement, the engine evaluates evidence from the resume text:
+1. **Strong Match (1.0 weight):** Skill is demonstrated in experience or project narratives with concrete sentence context (frequency $\ge 2$ or descriptive sentence snippet $>40$ chars).
+2. **Partial Match (0.85 weight):** Mentioned in skills section or single brief mention.
+3. **Related Skill (0.75 weight):** Matched via controlled semantic equivalence.
+4. **Missing (0.0 weight):** No verifiable mention found in document.
+5. **Insufficient Evidence (0.0 weight):** Ambiguous token in unrelated context.
+
+#### C. Mandatory vs. Preferred Weighting
+* **Mandatory Requirements:** Account for **85%** of the raw skill score.
+* **Preferred / Nice-to-Have Skills:** Account for **15%** of the raw skill score.
+* **Versatility Bonus:** Candidates meeting mandatory skills receive up to $+5\%$ bonus for additional relevant tech proficiencies. If mandatory requirements score $0.0$, the versatility bonus is strictly zero.
+
+---
+
+### 3.3. Chronological Tenure & Non-Overlapping Interval Merging ($S_{\text{exp}}$)
+
+1. **Dynamic Temporal Calculation:**
+   Current year and month fractions are determined dynamically using `datetime.now()` (e.g. `2026.85`), eliminating hardcoded current-year assumptions.
+2. **Interval Extraction:**
+   Dates are parsed into start and end floats: $t = \text{year} + \frac{\text{month} - 1}{12}$.
+3. **Non-Overlapping Interval Merging:**
+   Intervals $[t_{\text{start}}^{(i)}, t_{\text{end}}^{(i)}]$ are sorted chronologically. Overlapping concurrent tenures (e.g., freelancing during full-time employment) are merged:
+   $$\Delta t_{\text{total}} = \sum_{k} (t_{\text{end}}^{(k)} - t_{\text{start}}^{(k)})$$
+4. **Tenure Curve:**
+   * If $Y_{\text{cand}} \ge Y_{\text{req}}$: $S_{\text{exp}} = 100.0$
+   * If $Y_{\text{cand}} < Y_{\text{req}}$:
+     $$S_{\text{exp}} = \left(\frac{Y_{\text{cand}}}{Y_{\text{req}}}\right)^{0.85} \times 100.0$$
+   *(The $0.85$ power exponent penalizes seniority gaps gracefully without an unrealistic cliff for candidates just under the threshold).*
+
+---
+
+### 3.4. Education Matching ($S_{\text{edu}}$)
+
+The engine evaluates degree level without assuming unearned qualifications:
+* Ph.D. $\rightarrow 1.0$ (100%)
+* Master's Degree (M.S., M.Tech, MBA, MCA) $\rightarrow 0.95$ (95%)
+* Bachelor's Degree (B.S., B.Tech, B.E., BCA) $\rightarrow 0.85$ (85%)
+* Associate / Diploma $\rightarrow 0.70$ (70%)
+* If no education is mentioned: explicitly flagged as **`Not Specified`** ($S_{\text{edu}} = 50.0\%$, Extraction Confidence: `Low`).
+
+---
+
+## 4. Multi-Factor Extraction Confidence Model
+
+To ensure recruiters know when an extraction is solid vs ambiguous, every resume receives empirical confidence ratings:
+
+| Dimension | High Confidence Criteria | Medium Confidence Criteria | Low Confidence Criteria |
+| :--- | :--- | :--- | :--- |
+| **Name** | 2–4 title-cased words at top of document | Extracted from filename with clean tokens | Fallback to generic "Candidate" |
+| **Contact** | Verified Email AND verified Phone (10–15 digits) | Email OR Phone verified | Neither found |
+| **Experience** | Chronological intervals AND explicit tenure match | Dates found OR explicit tenure found | No dates; entry-level keywords only |
+| **Education** | Degree level AND institution name verified | Degree level verified | Not specified |
+| **Skills** | $\ge 5$ verified canonical skills | 2–4 verified skills | $<2$ skills found |
+| **Overall** | $\ge 4$ High dimensions, text stream verified | $\ge 2$ High dimensions | Scanned/empty PDF or low evidence |
+
+---
+
+## 5. Explainable AI (XAI) Output
+
+For every evaluated candidate, the engine outputs:
+1. **Verdict:** Categorization (`Strong Match`, `Good Potential`, `Moderate Fit`, `Low Alignment`).
+2. **Requirement Evidence Table:** Table showing every JD skill, category (Mandatory/Preferred), match result (Strong/Partial/Related/Missing), and the verbatim resume sentence snippet.
+3. **Key Strengths:** Explicit positive drivers (e.g. tenure buffer, strongly demonstrated frameworks).
+4. **Score Deductions / Gaps:** Missing mandatory requirements and experience shortfalls.
+5. **Domain Context:** Semantic alignment narrative.

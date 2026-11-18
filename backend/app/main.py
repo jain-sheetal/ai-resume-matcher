@@ -7,10 +7,12 @@ from app.routes.jd_routes import router as jd_router
 from app.routes.resume_routes import router as resume_router
 from app.routes.match_routes import router as match_router
 
+from app.matcher.embedding_engine import embedding_engine
+
 app = FastAPI(
     title="MatchPro AI - Resume Matching & Candidate Ranking API",
     description="Enterprise-grade AI-powered resume parsing, semantic embedding matching, and candidate ranking system.",
-    version="1.0.0"
+    version="1.1.0"
 )
 
 # Enable CORS for frontend integration
@@ -29,10 +31,12 @@ app.include_router(match_router)
 
 @app.get("/health")
 def health_check():
+    diagnostics = embedding_engine.get_diagnostics()
     return {
         "status": "healthy",
         "service": "MatchPro AI Engine",
-        "version": "1.0.0"
+        "version": "1.1.0",
+        "ai_engine": diagnostics.model_dump()
     }
 
 # Serve built frontend SPA if frontend/dist exists
