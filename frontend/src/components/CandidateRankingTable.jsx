@@ -324,8 +324,21 @@ export default function CandidateRankingTable({
 
                     {/* Experience */}
                     <td className="py-3.5 px-4 whitespace-nowrap">
-                      <span className="font-bold text-slate-800">{cand.experience_years}</span>
-                      <span className="text-slate-400 text-[11px] ml-1">years</span>
+                      <div className="flex flex-col">
+                        <span className="font-bold text-slate-900 text-xs">
+                          {cand.formatted_experience || `${cand.experience_years} years`}
+                        </span>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <span className={`px-1.5 py-0.2 text-[10px] font-extrabold rounded border ${
+                            (cand.experience_status === 'Experienced' || cand.experience_years >= 1.0)
+                              ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                              : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                          }`}>
+                            {cand.experience_status || (cand.experience_years >= 1.0 ? 'Experienced' : 'Fresher')}
+                          </span>
+                          <span className="text-[10px] text-slate-400 font-medium">Edu Excluded</span>
+                        </div>
+                      </div>
                     </td>
 
                     {/* Overall Score & Mini Bar */}

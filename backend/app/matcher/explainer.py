@@ -1,5 +1,24 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from app.models.schemas import MatchExplanation, ScoreBreakdown, SkillMatchEvidence, ExtractionConfidence
+
+def calculate_experience_gap(candidate_months: int, required_years: float) -> Tuple[int, str]:
+    """Calculate the exact experience gap in months and human-readable text."""
+    required_months = int(round(required_years * 12))
+    gap_months = max(0, required_months - candidate_months)
+    if gap_months == 0:
+        return 0, "No gap (Requirement met)"
+
+    gap_years = gap_months // 12
+    gap_rem_months = gap_months % 12
+
+    parts = []
+    if gap_years > 0:
+        parts.append(f"{gap_years} year{'s' if gap_years != 1 else ''}")
+    if gap_rem_months > 0:
+        parts.append(f"{gap_rem_months} month{'s' if gap_rem_months != 1 else ''}")
+
+    formatted_gap = " and ".join(parts) if len(parts) == 2 else parts[0]
+    return gap_months, formatted_gap
 
 def generate_match_explanation(
     candidate_name: str,
@@ -11,26 +30,34 @@ def generate_match_explanation(
     breakdown: ScoreBreakdown,
     degree_name: str,
     skill_evidences: Optional[List[SkillMatchEvidence]] = None,
-    confidence: Optional[ExtractionConfidence] = None
+    confidence: Optional[ExtractionConfidence] = None,
+    formatted_experience: Optional[str] = None
 ) -> MatchExplanation:
     """Generate transparent, evidence-based Explainable AI reasoning behind the candidate's match score."""
     strengths = []
     gaps = []
     skill_evidences = skill_evidences or []
 
-    # 1. Experience Analysis
-    exp_diff = candidate_years - required_years
-    if exp_diff >= 0:
-        if exp_diff >= 2.0:
-            strengths.append(f"Substantial seniority: {candidate_years:.1f} yrs vs {required_years:.1f} yrs required (+{exp_diff:.1f} yrs buffer).")
-            exp_text = f"Candidate comfortably exceeds the minimum tenure requirement by {exp_diff:.1f} years."
+    # 1. Experience Analysis adhering strictly to professional employment (academic excluded)
+    cand_months = int(round(candidate_years * 12))
+    req_months = int(round(required_years * 12))
+    exp_display = formatted_experience or (f"{candidate_years:.2f} years" if candidate_years > 0 else "0 years (Fresher)")
+
+    if required_years <= 0:
+        strengths.append(f"Entry-level role (0 yrs min): Candidate brings {exp_display} of verified professional experience.")
+        exp_text = f"Position is open to entry-level candidates / freshers (0 years minimum). Candidate offers {exp_display} of verified professional experience (Academic duration strictly excluded)."
+    elif cand_months >= req_months:
+        excess_months = cand_months - req_months
+        if excess_months >= 24:
+            strengths.append(f"Substantial seniority: {exp_display} vs {required_years:.1f} yrs required (+{round(excess_months / 12.0, 1)} yrs buffer).")
+            exp_text = f"Candidate comfortably exceeds the minimum tenure requirement with {exp_display} of verified professional employment (Education duration strictly excluded)."
         else:
-            strengths.append(f"Meets experience criteria: {candidate_years:.1f} yrs vs {required_years:.1f} yrs required.")
-            exp_text = f"Candidate fully satisfies the expected {required_years:.1f} years minimum experience."
+            strengths.append(f"Meets experience criteria: {exp_display} vs {required_years:.1f} yrs required.")
+            exp_text = f"Candidate fully satisfies the expected {required_years:.1f} years minimum experience with {exp_display} of professional employment (Education duration strictly excluded)."
     else:
-        gap_yrs = abs(exp_diff)
-        gaps.append(f"Experience shortfall: {candidate_years:.1f} yrs vs {required_years:.1f} yrs required (-{gap_yrs:.1f} yrs gap).")
-        exp_text = f"Candidate has {candidate_years:.1f} years of relevant experience, which is below the desired {required_years:.1f} years."
+        gap_months, formatted_gap = calculate_experience_gap(cand_months, required_years)
+        gaps.append(f"Experience shortfall: {exp_display} vs {required_years:.1f} yrs required (Experience gap: {formatted_gap}).")
+        exp_text = f"Candidate has {exp_display} of verified professional experience, which is below the desired {required_years:.1f} years (Experience gap: {formatted_gap}). Academic duration (e.g., B.Tech degree) is strictly excluded."
 
     # 2. Skill Evidence Analysis
     strong_matches = [e for e in skill_evidences if e.result == "Strong Match"]

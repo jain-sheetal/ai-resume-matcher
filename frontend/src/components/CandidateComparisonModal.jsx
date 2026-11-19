@@ -59,10 +59,12 @@ export default function CandidateComparisonModal({ candidateA, candidateB, onClo
                 <tr>
                   <td className="p-3 font-semibold text-slate-700">Total Experience</td>
                   <td className={`p-3 font-bold ${candidateA.experience_years >= candidateB.experience_years ? 'text-emerald-700 font-extrabold' : 'text-slate-700'}`}>
-                    {candidateA.experience_years} Years
+                    <div>{candidateA.formatted_experience || `${candidateA.experience_years} Years`}</div>
+                    <span className="text-[10px] text-slate-400 font-normal">({candidateA.experience_status || (candidateA.experience_years >= 1.0 ? 'Experienced' : 'Fresher')} • Edu Excluded)</span>
                   </td>
                   <td className={`p-3 font-bold ${candidateB.experience_years >= candidateA.experience_years ? 'text-emerald-700 font-extrabold' : 'text-slate-700'}`}>
-                    {candidateB.experience_years} Years
+                    <div>{candidateB.formatted_experience || `${candidateB.experience_years} Years`}</div>
+                    <span className="text-[10px] text-slate-400 font-normal">({candidateB.experience_status || (candidateB.experience_years >= 1.0 ? 'Experienced' : 'Fresher')} • Edu Excluded)</span>
                   </td>
                 </tr>
                 <tr>

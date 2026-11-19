@@ -120,7 +120,8 @@ async def evaluate_candidates(payload: MatchExecutionRequest):
             breakdown=breakdown,
             degree_name=resume.education.highest_degree,
             skill_evidences=skill_evidences,
-            confidence=resume.confidence
+            confidence=resume.confidence,
+            formatted_experience=getattr(resume.experience, "formatted_experience", None)
         )
 
         snippet = resume.raw_text[:500] + "..." if len(resume.raw_text) > 500 else resume.raw_text
@@ -134,6 +135,10 @@ async def evaluate_candidates(payload: MatchExecutionRequest):
                 email=resume.contact.email,
                 phone=resume.contact.phone,
                 experience_years=cand_years,
+                total_months=getattr(resume.experience, "total_months", int(cand_years * 12)),
+                formatted_experience=getattr(resume.experience, "formatted_experience", f"{cand_years:.1f} yrs"),
+                experience_status=getattr(resume.experience, "experience_status", "Experienced" if cand_years >= 1.0 else "Fresher"),
+                education_duration=getattr(resume.experience, "education_duration", "Excluded"),
                 overall_score=breakdown.overall_score,
                 matched_skills=matched_skills,
                 missing_skills=missing_skills,
@@ -142,7 +147,8 @@ async def evaluate_candidates(payload: MatchExecutionRequest):
                 score_breakdown=breakdown,
                 explanation=explanation,
                 confidence=resume.confidence,
-                raw_text_snippet=snippet
+                raw_text_snippet=snippet,
+                employment_history=getattr(resume.experience, "employment_history", [])
             )
         )
 
@@ -176,7 +182,8 @@ async def export_ranking_csv(payload: MatchExecutionRequest):
     # Header
     writer.writerow([
         "Rank", "Candidate Name", "Overall Match %", "Verdict",
-        "Experience (Yrs)", "Extraction Confidence", "Skills Score %",
+        "Total Professional Experience", "Experience Status", "Education Duration",
+        "Extraction Confidence", "Skills Score %",
         "Semantic Score %", "Experience Score %", "Education Score %",
         "Matched Skills", "Missing Skills", "Email", "Phone", "Filename"
     ])
@@ -187,7 +194,9 @@ async def export_ranking_csv(payload: MatchExecutionRequest):
             c.name,
             f"{c.overall_score}%",
             c.explanation.verdict,
-            c.experience_years,
+            c.formatted_experience or f"{c.experience_years} years",
+            c.experience_status or ("Experienced" if c.experience_years >= 1.0 else "Fresher"),
+            c.education_duration,
             c.confidence.overall,
             f"{c.score_breakdown.skills_score}%",
             f"{c.score_breakdown.semantic_score}%",

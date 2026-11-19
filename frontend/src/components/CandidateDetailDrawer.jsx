@@ -123,32 +123,108 @@ export default function CandidateDetailDrawer({ candidate, jobDescription, onClo
             </div>
           </div>
 
-          {/* Experience Comparison */}
-          <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl">
-            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5 mb-3">
-              <Briefcase className="w-4 h-4 text-blue-600" />
-              Experience Evaluation
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-center">
+          {/* Experience Comparison & Requirements Breakdown */}
+          <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                <Briefcase className="w-4 h-4 text-blue-600" />
+                Professional Experience Breakdown
+              </h3>
+              <span className={`px-2.5 py-0.5 text-xs font-extrabold rounded-full border ${
+                (candidate.experience_status === 'Experienced' || candidate.experience_years >= 1.0)
+                  ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                  : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+              }`}>
+                {candidate.experience_status || (candidate.experience_years >= 1.0 ? 'Experienced' : 'Fresher')}
+              </span>
+            </div>
+
+            {/* Direct Requirements Output Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
               <div className="p-3 bg-white border border-slate-200 rounded-lg">
-                <span className="text-[10px] uppercase font-bold text-slate-400 block">Candidate Has</span>
-                <span className="text-base font-extrabold text-slate-900">{candidate.experience_years} Years</span>
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">Total Professional Experience</span>
+                <span className="text-sm font-black text-slate-900">
+                  {candidate.formatted_experience || `${candidate.experience_years} years 0 months`}
+                </span>
               </div>
               <div className="p-3 bg-white border border-slate-200 rounded-lg">
-                <span className="text-[10px] uppercase font-bold text-slate-400 block">JD Requires</span>
-                <span className="text-base font-extrabold text-blue-700">{jobDescription?.min_experience_years || 2} Years</span>
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">Education Duration</span>
+                <span className="text-sm font-black text-emerald-700 flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 inline" />
+                  {candidate.education_duration || 'Excluded'}
+                </span>
               </div>
-              <div className="p-3 bg-white border border-slate-200 rounded-lg col-span-2 sm:col-span-1">
-                <span className="text-[10px] uppercase font-bold text-slate-400 block">Tenure Delta</span>
-                <span className={`text-base font-extrabold ${candidate.experience_years >= (jobDescription?.min_experience_years || 2) ? 'text-emerald-600' : 'text-amber-600'}`}>
-                  {candidate.experience_years >= (jobDescription?.min_experience_years || 2) ? '+' : ''}
-                  {(candidate.experience_years - (jobDescription?.min_experience_years || 2)).toFixed(1)} Yrs
+              <div className="p-3 bg-white border border-slate-200 rounded-lg">
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">Experience Status</span>
+                <span className="text-sm font-black text-slate-900">
+                  {candidate.experience_status || (candidate.experience_years >= 1.0 ? 'Experienced' : 'Fresher')}
                 </span>
               </div>
             </div>
-            <p className="text-xs text-slate-600 mt-2.5 bg-white p-2.5 rounded-lg border border-slate-100">
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-center pt-1">
+              <div className="p-2.5 bg-white border border-slate-200 rounded-lg">
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">Candidate Has</span>
+                <span className="text-sm font-extrabold text-slate-900">{candidate.experience_years} Years</span>
+              </div>
+              <div className="p-2.5 bg-white border border-slate-200 rounded-lg">
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">JD Requires</span>
+                <span className="text-sm font-extrabold text-blue-700">
+                  {jobDescription?.min_experience_years === 0 ? '0 Yrs (Entry Level)' : `${jobDescription?.min_experience_years ?? 2} Years`}
+                </span>
+              </div>
+              <div className="p-2.5 bg-white border border-slate-200 rounded-lg col-span-2 sm:col-span-1">
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">Tenure Delta</span>
+                <span className={`text-sm font-extrabold ${candidate.experience_years >= (jobDescription?.min_experience_years ?? 0) ? 'text-emerald-600' : 'text-amber-600'}`}>
+                  {candidate.experience_years >= (jobDescription?.min_experience_years ?? 0) ? '+' : ''}
+                  {(candidate.experience_years - (jobDescription?.min_experience_years ?? 0)).toFixed(1)} Yrs
+                </span>
+              </div>
+            </div>
+            <p className="text-xs text-slate-600 mt-2 bg-white p-2.5 rounded-lg border border-slate-100">
               {exp.experience_analysis}
             </p>
+
+            {/* Verified Professional Work History List */}
+            {candidate.employment_history && candidate.employment_history.length > 0 && (
+              <div className="mt-3 pt-3 border-t border-slate-200 space-y-2">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                  Verified Employment & Internship Timeline ({candidate.employment_history.length})
+                </span>
+                <div className="space-y-2">
+                  {candidate.employment_history.map((emp, idx) => (
+                    <div key={idx} className="p-2.5 bg-white border border-slate-200 rounded-lg flex items-start justify-between">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-slate-900">{emp.job_title}</span>
+                          <span className={`px-1.5 py-0.2 text-[10px] font-bold rounded ${
+                            emp.employment_type === 'Internship' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+                            emp.employment_type === 'Part-time' ? 'bg-purple-50 text-purple-700 border border-purple-200' :
+                            'bg-blue-50 text-blue-700 border border-blue-200'
+                          }`}>
+                            {emp.employment_type}
+                          </span>
+                        </div>
+                        {emp.company_name && (
+                          <span className="text-[11px] text-slate-600 block mt-0.5">{emp.company_name}</span>
+                        )}
+                        {emp.verification_flag && (
+                          <span className="text-[10px] text-amber-600 font-medium block mt-0.5">⚠️ {emp.verification_flag}</span>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs font-semibold text-slate-700 block">
+                          {emp.start_date} – {emp.end_date}
+                        </span>
+                        <span className="text-[10px] text-slate-500 font-medium block">
+                          {emp.duration_formatted}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Contextual Requirement Evidence Table */}

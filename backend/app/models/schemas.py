@@ -25,26 +25,50 @@ class ExtractionConfidence(BaseModel):
 class EducationEntry(BaseModel):
     degree: str
     institution: Optional[str] = None
+    start_year: Optional[int] = None
     graduation_year: Optional[int] = None
+    education_duration: str = "Excluded from professional experience"
     field_of_study: Optional[str] = None
 
 class CandidateEducation(BaseModel):
     highest_degree: str
     institution: Optional[str] = None
+    start_year: Optional[int] = None
     graduation_year: Optional[int] = None
+    education_duration: str = "Excluded from experience calculation"
     field_of_study: Optional[str] = None
     entries: List[EducationEntry] = []
     is_detected: bool = True
     score: float = 1.0
 
+class EmploymentEntry(BaseModel):
+    company_name: Optional[str] = None
+    job_title: str
+    employment_type: str = "Full-time"  # Full-time | Part-time | Internship
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
+    duration_months: int = 0
+    duration_formatted: str = ""
+    is_current: bool = False
+    verification_flag: Optional[str] = None
+
 class CandidateExperience(BaseModel):
     total_years: float
+    total_months: int = 0
+    years: int = 0
+    months: int = 0
+    formatted_experience: str = "0 years"
+    years_months: str = "0 years 0 months"
+    education_duration: str = "Excluded"
+    experience_status: str = "Fresher"  # "Fresher" | "Experienced"
+    employment_history: List[EmploymentEntry] = []
     calculated_years: float = 0.0
     explicit_claimed_years: Optional[float] = None
     role_titles: List[str] = []
     companies: List[str] = []
     projects: List[str] = []
     certifications: List[str] = []
+    confidence: str = "High"
     summary: str = ""
 
 class CandidateContact(BaseModel):
@@ -114,6 +138,10 @@ class CandidateMatchResult(BaseModel):
     email: Optional[str] = None
     phone: Optional[str] = None
     experience_years: float
+    total_months: int = 0
+    formatted_experience: Optional[str] = None
+    experience_status: Optional[str] = None
+    education_duration: str = "Excluded"
     overall_score: float
     matched_skills: List[str]
     missing_skills: List[str]
@@ -123,6 +151,7 @@ class CandidateMatchResult(BaseModel):
     explanation: MatchExplanation
     confidence: ExtractionConfidence = Field(default_factory=ExtractionConfidence)
     raw_text_snippet: Optional[str] = None
+    employment_history: List[EmploymentEntry] = []
 
 class MatchResponse(BaseModel):
     job_description: ParsedJobDescription
