@@ -1,11 +1,9 @@
 # MatchPro AI — AI-Based Resume Matching & Candidate Ranking System
 
-> **Practical Development Assignment Submission**  
-> **Role:** AI / Full-Stack Developer Intern  
+> **Production AI Candidate Screening & Matching Engine**  
 > **Live Web Application:** [https://ai-resume-matcher-xs5e.onrender.com/](https://ai-resume-matcher-xs5e.onrender.com/)  
 > **Repository:** [https://github.com/jain-sheetal/ai-resume-matcher](https://github.com/jain-sheetal/ai-resume-matcher)  
-> **Author:** Sheetal Jain (`jain-sheetal`)  
-> **Verified Evaluation Score:** **93.5 / 100** (Official Rubric Assessment)
+> **Author:** Sheetal Jain (`jain-sheetal`)
 
 ---
 
@@ -14,20 +12,6 @@
 **MatchPro AI** is a lightweight, cloud-deployable candidate screening and ranking platform engineered to eliminate the dual failure modes of legacy keyword-based Applicant Tracking Systems: **keyword stuffing false-positives** and **semantic synonym false-negatives**.
 
 By combining **Sentence-BERT (`all-MiniLM-L6-v2`)** dense semantic embeddings with a **controlled skill ontology**, **chronological timeline merging**, and **5-tier match classification**, MatchPro AI evaluates candidates holistically across skills, experience, education, and contextual project execution. Every score is backed by transparent, evidence-based Explainable AI citations linking requirements directly to verbatim resume text.
-
----
-
-## 🎯 Official Company Evaluation Criteria Mapping (100%)
-
-| Evaluation Parameter | Weight | Audited Score | Verified Implementation Evidence |
-|:---|:---:|:---:|:---|
-| **Functional Application** | **25%** | **24.0 / 25.0** | 100% operational live deployment on Render. All 6 API endpoints passing. Batch evaluation in <1.5s on cloud CPU. |
-| **Resume Parsing Accuracy** | **15%** | **13.5 / 15.0** | 20 resumes audited: 95.0% name accuracy, 100% email accuracy, 91.1% skill F1-score. Timeline merging prevents tenure inflation. |
-| **JD-to-Resume Matching Logic** | **25%** | **23.5 / 25.0** | 15/15 test scenarios passing (100%). Mandatory (85%) vs Preferred (15%) weighting. Controlled skill equivalences. |
-| **Matching Score & Explanation** | **15%** | **14.0 / 15.0** | Strictly bounded (0–100), deterministic scoring. Evidence-based Explainable AI linking claims directly to source text snippets. |
-| **UI/UX & Usability** | **10%** | **9.0 / 10.0** | Recruiter search bar, experience filters, category tier filters, head-to-head comparison modal, and detailed drawer with evidence breakdowns. |
-| **Code Quality & Documentation** | **10%** | **9.5 / 10.0** | Modular architecture (`parsers`, `extractor`, `matcher`, `routes`). 23 comprehensive automated unit/integration tests passing in 0.18s. |
-| **TOTAL EVALUATION SCORE** | **100%** | **93.5 / 100.0** | **Exceeds target score of 85–90/100.** |
 
 ---
 
@@ -175,7 +159,7 @@ Execute the test suites:
 cd backend
 source venv/bin/activate
 
-# 1. Comprehensive Suite (23 Tests covering all P0/P1 criteria)
+# 1. Comprehensive Suite (23 Tests covering all functional requirements)
 python test_comprehensive_suite.py
 
 # 2. REST API Endpoints Suite (6 Tests)
@@ -204,10 +188,10 @@ MatchPro AI uses a multi-stage `Dockerfile`:
 
 ---
 
-## 📁 Submission Package Directory
+## 📁 Technical Documentation Directory
 
-Complete technical evaluation documentation is organized inside the `submission/` directory:
-- [PROJECT_OVERVIEW.md](submission/PROJECT_OVERVIEW.md) — Executive summary, features, and evaluation criteria mapping.
+Complete technical engineering documentation is organized inside the `submission/` directory:
+- [PROJECT_OVERVIEW.md](submission/PROJECT_OVERVIEW.md) — Executive summary, technical architecture, and core feature overview.
 - [ARCHITECTURE.md](submission/ARCHITECTURE.md) — End-to-end data flow with Mermaid diagrams.
 - [INTERVIEW_ALGORITHM.md](submission/INTERVIEW_ALGORITHM.md) — SBERT, 5-tier matching, interval merging, and worked numerical proofs.
 - [INTERVIEW_PREPARATION.md](submission/INTERVIEW_PREPARATION.md) — 40 interview questions and concise technical answers.

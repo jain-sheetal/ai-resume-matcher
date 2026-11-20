@@ -109,9 +109,14 @@ class ParsedJobDescription(BaseModel):
 class ScoreBreakdown(BaseModel):
     overall_score: float
     skills_score: float
-    semantic_score: float
-    experience_score: float
-    education_score: float
+    technical_skills_score: float = 0.0
+    ai_ml_score: float = 0.0
+    experience_score: float = 0.0
+    projects_score: float = 0.0
+    genai_score: float = 0.0
+    tools_deployment_score: float = 0.0
+    education_score: float = 0.0
+    semantic_score: float = 0.0
 
 class SkillMatchEvidence(BaseModel):
     requirement: str
@@ -120,11 +125,14 @@ class SkillMatchEvidence(BaseModel):
     evidence_snippet: Optional[str] = None
     frequency: int = 0
     matched_term: Optional[str] = None
+    demonstration_section: Optional[str] = "Skills Only"  # Experience | Projects | Skills Only
 
 class MatchExplanation(BaseModel):
     verdict: str
     strengths: List[str]
     gaps: List[str]
+    weaknesses: List[str] = []
+    ranking_explanation: str = ""
     experience_analysis: str
     skill_analysis: str
     semantic_alignment: str
@@ -139,6 +147,7 @@ class CandidateMatchResult(BaseModel):
     phone: Optional[str] = None
     experience_years: float
     total_months: int = 0
+    relevant_experience_years: float = 0.0
     formatted_experience: Optional[str] = None
     experience_status: Optional[str] = None
     education_duration: str = "Excluded"
@@ -152,6 +161,8 @@ class CandidateMatchResult(BaseModel):
     confidence: ExtractionConfidence = Field(default_factory=ExtractionConfidence)
     raw_text_snippet: Optional[str] = None
     employment_history: List[EmploymentEntry] = []
+    weaknesses: List[str] = []
+    ranking_explanation: str = ""
 
 class MatchResponse(BaseModel):
     job_description: ParsedJobDescription

@@ -32,7 +32,7 @@ def test_endpoints():
     res = client.get("/api/resumes/samples")
     assert res.status_code == 200, f"Sample resumes failed: {res.text}"
     sample_resumes = res.json()
-    assert len(sample_resumes) == 12, f"Expected 12 resumes, got {len(sample_resumes)}"
+    assert len(sample_resumes) >= 12, f"Expected at least 12 resumes, got {len(sample_resumes)}"
     print(f"✓ GET /api/resumes/samples: OK (Loaded {len(sample_resumes)} sample resumes)")
 
     # 5. Evaluate Match

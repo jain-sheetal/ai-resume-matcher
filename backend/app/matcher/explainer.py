@@ -74,7 +74,7 @@ def generate_match_explanation(
             strengths.append(f"Strongly demonstrated skills ({len(strong_matches)}): {strong_names}.")
 
     if related_matches:
-        rel_str = ", ".join([f"{e.requirement} (via {e.matched_term})" for e in related_matches[:3]])
+        rel_str = ", ".join([f"{e.requirement}" for e in related_matches[:3]])
         strengths.append(f"Transferable skill equivalence: {rel_str}.")
 
     if missing_items:
@@ -104,7 +104,7 @@ def generate_match_explanation(
 
     # 4. Education
     if degree_name and degree_name not in ("Not Specified", "Unknown"):
-        strengths.append(f"Academic baseline verified: {degree_name}.")
+        strengths.append(f"Academic baseline verified: {degree_name} (Duration excluded from work tenure).")
     else:
         gaps.append("Education: Degree level not explicitly specified in resume.")
 
@@ -112,21 +112,36 @@ def generate_match_explanation(
     conf_label = confidence.overall if confidence else "High"
     conf_assessment = f"{conf_label} Confidence Extraction: Candidate contact, skills, and chronological tenure verified from source document."
 
-    # 6. Overall Verdict
+    # 6. Overall Verdict (Consistent with match percentage scale)
     overall = breakdown.overall_score
-    if overall >= 85.0:
+    if overall >= 80.0:
         verdict = "Strong Match — Priority Candidate"
-    elif overall >= 72.0:
-        verdict = "Good Potential — Recommended for Screening"
-    elif overall >= 55.0:
-        verdict = "Moderate Fit — Relevant Skills with Some Gaps"
+    elif overall >= 65.0:
+        verdict = "Good Match — Recommended for Screening"
+    elif overall >= 50.0:
+        verdict = "Moderate Match — Relevant Skills with Some Gaps"
     else:
-        verdict = "Low Alignment — Significant Skill/Experience Mismatch"
+        verdict = "Low Match — Significant Skill/Experience Mismatch"
+
+    # 7. Transparent Ranking Explanation
+    weaknesses = list(gaps)
+    aiml_txt = f"{getattr(breakdown, 'ai_ml_score', breakdown.skills_score):.1f}%"
+    proj_txt = f"{getattr(breakdown, 'projects_score', breakdown.semantic_score):.1f}%"
+    exp_txt_score = f"{breakdown.experience_score:.1f}%"
+
+    ranking_explanation = (
+        f"Evaluated with an overall match score of {overall:.1f}% ({verdict.split('—')[0].strip()}). "
+        f"Demonstrated {len(matched_skills)} matched technical skills with an AI/ML competency score of {aiml_txt} "
+        f"and hands-on project score of {proj_txt}. Experience score is {exp_txt_score} based on verified professional "
+        f"history ({exp_display}), with academic degree duration strictly excluded."
+    )
 
     return MatchExplanation(
         verdict=verdict,
         strengths=strengths,
         gaps=gaps,
+        weaknesses=weaknesses,
+        ranking_explanation=ranking_explanation,
         experience_analysis=exp_text,
         skill_analysis=skill_text,
         semantic_alignment=sem_text,

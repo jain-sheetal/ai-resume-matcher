@@ -102,22 +102,127 @@ export default function CandidateDetailDrawer({ candidate, jobDescription, onClo
               </div>
 
               {/* Mini breakdown chips */}
-              <div className="grid grid-cols-2 gap-2 w-full sm:w-auto">
-                <div className="p-2.5 bg-white/10 rounded-xl text-center backdrop-blur-xs">
-                  <span className="text-[10px] uppercase font-bold text-slate-300 block">Skills</span>
-                  <span className="text-sm font-bold text-white">{sb.skills_score}%</span>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full sm:w-auto">
+                <div className="p-2 bg-white/10 rounded-xl text-center backdrop-blur-xs">
+                  <span className="text-[10px] uppercase font-bold text-slate-300 block">Tech Skills</span>
+                  <span className="text-sm font-bold text-white">{sb.technical_skills_score ?? sb.skills_score}%</span>
                 </div>
-                <div className="p-2.5 bg-white/10 rounded-xl text-center backdrop-blur-xs">
-                  <span className="text-[10px] uppercase font-bold text-slate-300 block">Semantic</span>
-                  <span className="text-sm font-bold text-white">{sb.semantic_score}%</span>
+                <div className="p-2 bg-white/10 rounded-xl text-center backdrop-blur-xs">
+                  <span className="text-[10px] uppercase font-bold text-slate-300 block">AI / ML</span>
+                  <span className="text-sm font-bold text-indigo-300">{sb.ai_ml_score ?? sb.skills_score}%</span>
                 </div>
-                <div className="p-2.5 bg-white/10 rounded-xl text-center backdrop-blur-xs">
+                <div className="p-2 bg-white/10 rounded-xl text-center backdrop-blur-xs">
+                  <span className="text-[10px] uppercase font-bold text-slate-300 block">Projects</span>
+                  <span className="text-sm font-bold text-emerald-300">{sb.projects_score ?? 80}%</span>
+                </div>
+                <div className="p-2 bg-white/10 rounded-xl text-center backdrop-blur-xs">
                   <span className="text-[10px] uppercase font-bold text-slate-300 block">Experience</span>
                   <span className="text-sm font-bold text-white">{sb.experience_score}%</span>
                 </div>
-                <div className="p-2.5 bg-white/10 rounded-xl text-center backdrop-blur-xs">
+                <div className="p-2 bg-white/10 rounded-xl text-center backdrop-blur-xs">
+                  <span className="text-[10px] uppercase font-bold text-slate-300 block">GenAI</span>
+                  <span className="text-sm font-bold text-purple-300">{sb.genai_score ?? 0}%</span>
+                </div>
+                <div className="p-2 bg-white/10 rounded-xl text-center backdrop-blur-xs">
+                  <span className="text-[10px] uppercase font-bold text-slate-300 block">Tools / Deploy</span>
+                  <span className="text-sm font-bold text-blue-300">{sb.tools_deployment_score ?? 50}%</span>
+                </div>
+                <div className="p-2 bg-white/10 rounded-xl text-center backdrop-blur-xs">
                   <span className="text-[10px] uppercase font-bold text-slate-300 block">Education</span>
                   <span className="text-sm font-bold text-white">{sb.education_score}%</span>
+                </div>
+                <div className="p-2 bg-white/10 rounded-xl text-center backdrop-blur-xs">
+                  <span className="text-[10px] uppercase font-bold text-slate-300 block">Overall Match</span>
+                  <span className="text-sm font-extrabold text-amber-300">{candidate.overall_score}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Transparent Scoring Breakdown Card */}
+          <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+              <Award className="w-4 h-4 text-indigo-600" />
+              Transparent Scoring Breakdown
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div className="p-2.5 bg-white border border-slate-200 rounded-lg">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="font-semibold text-slate-700">Overall Match Percentage</span>
+                  <span className="font-extrabold text-indigo-700">{candidate.overall_score}%</span>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-1.5">
+                  <div className="bg-indigo-600 h-1.5 rounded-full" style={{ width: `${candidate.overall_score}%` }}></div>
+                </div>
+              </div>
+
+              <div className="p-2.5 bg-white border border-slate-200 rounded-lg">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="font-semibold text-slate-700">Technical Skills Score</span>
+                  <span className="font-extrabold text-slate-900">{sb.technical_skills_score ?? sb.skills_score}%</span>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-1.5">
+                  <div className="bg-blue-600 h-1.5 rounded-full" style={{ width: `${sb.technical_skills_score ?? sb.skills_score}%` }}></div>
+                </div>
+              </div>
+
+              <div className="p-2.5 bg-white border border-slate-200 rounded-lg">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="font-semibold text-slate-700">AI / ML Score</span>
+                  <span className="font-extrabold text-purple-700">{sb.ai_ml_score ?? sb.skills_score}%</span>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-1.5">
+                  <div className="bg-purple-600 h-1.5 rounded-full" style={{ width: `${sb.ai_ml_score ?? sb.skills_score}%` }}></div>
+                </div>
+              </div>
+
+              <div className="p-2.5 bg-white border border-slate-200 rounded-lg">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="font-semibold text-slate-700">Experience Score</span>
+                  <span className="font-extrabold text-emerald-700">{sb.experience_score}%</span>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-1.5">
+                  <div className="bg-emerald-600 h-1.5 rounded-full" style={{ width: `${sb.experience_score}%` }}></div>
+                </div>
+              </div>
+
+              <div className="p-2.5 bg-white border border-slate-200 rounded-lg">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="font-semibold text-slate-700">Projects Score</span>
+                  <span className="font-extrabold text-teal-700">{sb.projects_score ?? 80}%</span>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-1.5">
+                  <div className="bg-teal-600 h-1.5 rounded-full" style={{ width: `${sb.projects_score ?? 80}%` }}></div>
+                </div>
+              </div>
+
+              <div className="p-2.5 bg-white border border-slate-200 rounded-lg">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="font-semibold text-slate-700">GenAI Score</span>
+                  <span className="font-extrabold text-indigo-700">{sb.genai_score ?? 0}%</span>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-1.5">
+                  <div className="bg-indigo-500 h-1.5 rounded-full" style={{ width: `${sb.genai_score ?? 0}%` }}></div>
+                </div>
+              </div>
+
+              <div className="p-2.5 bg-white border border-slate-200 rounded-lg">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="font-semibold text-slate-700">Tools & Deployment Score</span>
+                  <span className="font-extrabold text-blue-700">{sb.tools_deployment_score ?? 50}%</span>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-1.5">
+                  <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: `${sb.tools_deployment_score ?? 50}%` }}></div>
+                </div>
+              </div>
+
+              <div className="p-2.5 bg-white border border-slate-200 rounded-lg">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="font-semibold text-slate-700">Education Score</span>
+                  <span className="font-extrabold text-slate-800">{sb.education_score}%</span>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-1.5">
+                  <div className="bg-slate-600 h-1.5 rounded-full" style={{ width: `${sb.education_score}%` }}></div>
                 </div>
               </div>
             </div>
@@ -376,6 +481,18 @@ export default function CandidateDetailDrawer({ candidate, jobDescription, onClo
               </h3>
             </div>
 
+            {/* Explanation of Ranking */}
+            {(candidate.ranking_explanation || exp.ranking_explanation) && (
+              <div className="p-3 bg-white border border-indigo-200/80 rounded-xl shadow-2xs">
+                <span className="text-[11px] font-bold text-indigo-900 uppercase tracking-wider block mb-1">
+                  Explanation of Ranking
+                </span>
+                <p className="text-xs text-slate-700 leading-relaxed">
+                  {candidate.ranking_explanation || exp.ranking_explanation}
+                </p>
+              </div>
+            )}
+
             {/* Strengths */}
             <div>
               <span className="text-xs font-bold text-emerald-800 block mb-1.5">
@@ -391,17 +508,17 @@ export default function CandidateDetailDrawer({ candidate, jobDescription, onClo
               </ul>
             </div>
 
-            {/* Gaps */}
-            {exp.gaps.length > 0 && (
+            {/* Weaknesses */}
+            {((candidate.weaknesses && candidate.weaknesses.length > 0) || exp.gaps.length > 0) && (
               <div>
                 <span className="text-xs font-bold text-rose-800 block mb-1.5">
-                  Deductions & Identified Gaps
+                  Identified Weaknesses & Gaps
                 </span>
                 <ul className="space-y-1.5">
-                  {exp.gaps.map((gap, idx) => (
+                  {(candidate.weaknesses || exp.gaps).map((weak, idx) => (
                     <li key={idx} className="text-xs text-slate-700 flex items-start gap-2">
                       <AlertTriangle className="w-3.5 h-3.5 text-rose-600 shrink-0 mt-0.5" />
-                      <span>{gap}</span>
+                      <span>{weak}</span>
                     </li>
                   ))}
                 </ul>

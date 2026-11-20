@@ -65,17 +65,22 @@ SKILL_TAXONOMY = {
     "git": {"canonical": "Git", "category": "Cloud & DevOps", "aliases": ["github", "gitlab", "bitbucket", "version control"]},
 
     # AI / Machine Learning / NLP
-    "machine learning": {"canonical": "Machine Learning", "category": "AI / ML", "aliases": ["ml", "machine-learning"]},
-    "deep learning": {"canonical": "Deep Learning", "category": "AI / ML", "aliases": ["dl", "deep-learning", "neural networks", "ann", "cnn", "rnn"]},
-    "nlp": {"canonical": "NLP", "category": "AI / ML", "aliases": ["natural language processing", "text analytics", "computational linguistics"]},
+    "machine learning": {"canonical": "Machine Learning", "category": "AI / ML", "aliases": ["ml", "machine-learning", "machine learning algorithms"]},
+    "deep learning": {"canonical": "Deep Learning", "category": "AI / ML", "aliases": ["dl", "deep-learning", "neural networks", "ann", "rnn"]},
+    "cnn": {"canonical": "CNN", "category": "AI / ML", "aliases": ["convolutional neural networks", "convolutional neural network", "convnet", "convnets", "cnns"]},
+    "nlp": {"canonical": "NLP", "category": "AI / ML", "aliases": ["natural language processing", "text analytics", "computational linguistics", "text preprocessing"]},
+    "computer vision": {"canonical": "Computer Vision", "category": "AI / ML", "aliases": ["cv", "opencv", "image processing", "object detection"]},
     "spacy": {"canonical": "spaCy", "category": "AI / ML", "aliases": ["spacy nlp"]},
     "sentence transformers": {"canonical": "Sentence Transformers", "category": "AI / ML", "aliases": ["sentence-transformers", "sbert", "sentence embeddings"]},
-    "pytorch": {"canonical": "PyTorch", "category": "AI / ML", "aliases": ["torch"]},
-    "tensorflow": {"canonical": "TensorFlow", "category": "AI / ML", "aliases": ["tf", "keras"]},
-    "scikit-learn": {"canonical": "Scikit-Learn", "category": "AI / ML", "aliases": ["sklearn", "scikit learn"]},
-    "huggingface": {"canonical": "Hugging Face", "category": "AI / ML", "aliases": ["hugging face", "transformers", "hf"]},
-    "large language models": {"canonical": "LLMs", "category": "AI / ML", "aliases": ["llm", "llms", "generative ai", "genai", "prompt engineering", "langchain", "llama", "gpt-4", "rag", "retrieval augmented generation"]},
-    "computer vision": {"canonical": "Computer Vision", "category": "AI / ML", "aliases": ["cv", "opencv", "image processing"]},
+    "pytorch": {"canonical": "PyTorch", "category": "AI / ML", "aliases": ["torch", "pytorch framework"]},
+    "tensorflow": {"canonical": "TensorFlow", "category": "AI / ML", "aliases": ["tf", "keras", "tensorflow 2", "tf.keras"]},
+    "scikit-learn": {"canonical": "Scikit-Learn", "category": "AI / ML", "aliases": ["sklearn", "scikit learn", "scikit"]},
+    "huggingface": {"canonical": "Hugging Face", "category": "AI / ML", "aliases": ["hugging face", "transformers", "hf", "huggingface transformers"]},
+    "generative ai": {"canonical": "Generative AI", "category": "AI / ML", "aliases": ["genai", "gen-ai", "generative-ai"]},
+    "large language models": {"canonical": "LLMs", "category": "AI / ML", "aliases": ["llm", "llms", "large language model", "large language models"]},
+    "rag": {"canonical": "RAG", "category": "AI / ML", "aliases": ["retrieval augmented generation", "retrieval-augmented generation", "rag pipeline"]},
+    "prompt engineering": {"canonical": "Prompt Engineering", "category": "AI / ML", "aliases": ["prompt design", "few-shot prompting", "chain-of-thought"]},
+    "langchain": {"canonical": "LangChain", "category": "AI / ML", "aliases": ["lang-chain", "llamaindex", "llama-index"]},
     "pandas": {"canonical": "Pandas", "category": "AI / ML", "aliases": ["pandas dataframe"]},
     "numpy": {"canonical": "NumPy", "category": "AI / ML", "aliases": ["numpy array"]},
 
@@ -98,3 +103,20 @@ def get_canonical_skill(skill_str: str) -> str:
     """Return the normalized canonical skill name or the title-cased string if unknown."""
     cleaned = skill_str.strip().lower()
     return ALIAS_MAP.get(cleaned, skill_str.strip().title())
+
+AI_ML_CORE_SKILLS = {
+    "Python", "PyTorch", "TensorFlow", "Scikit-Learn", "CNN", "NLP",
+    "Machine Learning", "Deep Learning", "NumPy", "Pandas", "Computer Vision",
+    "spaCy", "Sentence Transformers", "Hugging Face"
+}
+
+GENAI_CORE_SKILLS = {
+    "Generative AI", "LLMs", "RAG", "Prompt Engineering", "LangChain",
+    "Hugging Face", "Sentence Transformers"
+}
+
+TOOLS_DEPLOYMENT_CORE_SKILLS = {
+    "FastAPI", "Flask", "Docker", "Kubernetes", "REST APIs", "CI/CD",
+    "Git", "AWS", "Azure", "GCP", "Linux", "PostgreSQL", "MySQL",
+    "MongoDB", "Redis", "Elasticsearch"
+}

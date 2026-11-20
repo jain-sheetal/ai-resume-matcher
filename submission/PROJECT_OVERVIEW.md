@@ -5,7 +5,7 @@
 **GitHub Repository:** [https://github.com/jain-sheetal/ai-resume-matcher](https://github.com/jain-sheetal/ai-resume-matcher)  
 **Evaluated Branch:** `main` (Commit: `b759858feaf696d67ffb61f61930d0955251a7df`)  
 **Author:** Sheetal Jain (`jain-sheetal`)  
-**Internship Role:** AI / Full-Stack Developer Intern Evaluation
+**Role:** AI & Full-Stack Engineering
 
 ---
 
@@ -53,17 +53,3 @@ Recruiters spend an average of 6–8 seconds scanning a candidate's resume, ofte
 5. **Interactive Recruiter Filtering:** Instant search by candidate name or tech keywords, plus tenure filters (`1+`, `3+`, `5+` years) and category tier filters (`Strong`, `Good`, `Moderate`).
 6. **Head-to-Head Comparison:** Visual side-by-side comparison of 2 selected candidates.
 7. **Complete CSV Export:** Exports candidate ranking, scores, contact information, and matched skills in one click.
-
----
-
-## 5. Company Assignment Evaluation Rubric Assessment
-
-| Evaluation Parameter | Weight | Audited Score | Concrete Verified Evidence |
-|---|---:|---:|---|
-| **Functional Application** | 25% | **24.0 / 25.0** | 100% operational live deployment on Render. 6/6 API endpoints passing. Batch evaluation in <1.5s on cloud CPU. |
-| **Resume Parsing Accuracy** | 15% | **13.5 / 15.0** | Tested across 20 resumes: 95.0% name accuracy, 100% email accuracy, 91.1% skill F1-score. Interval merging prevents tenure inflation. |
-| **JD-to-Resume Matching Logic** | 25% | **23.5 / 25.0** | 15/15 test scenarios passing (100%). Mandatory (85%) vs Preferred (15%) weighting. Controlled skill equivalences. |
-| **Matching Score & Explanation** | 15% | **14.0 / 15.0** | Strictly bounded (0–100), deterministic scoring. Evidence-based Explainable AI linking claims directly to source text. |
-| **UI/UX & Usability** | 10% | **9.0 / 10.0** | Recruiter search bar, experience filters, category tier filters, head-to-head comparison modal, and detailed drawer with evidence breakdowns. |
-| **Code Quality & Documentation** | 10% | **9.5 / 10.0** | Modular architecture (`parsers`, `extractor`, `matcher`, `routes`). 23 comprehensive automated unit/integration tests passing in 0.18s. |
-| **TOTAL EVALUATION SCORE** | **100%** | **93.5 / 100.0** | **Exceeds target score of 85–90/100.** |

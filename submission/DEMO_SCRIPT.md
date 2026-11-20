@@ -65,4 +65,4 @@
 ### [4:30 – 5:00] AI Methodology & Conclusion
 - **On Screen:** Return to hero banner. Point to GitHub link and live Render deployment.
 - **Presenter Narration:**
-  > *"Under the hood, MatchPro AI merges overlapping employment dates to prevent tenure inflation, uses controlled equivalences for technologies like Postgres and React, and strictly bounds scores between 0 and 100%. With 23 automated tests passing in 0.18 seconds and a verified evaluation score of 93.5/100, MatchPro AI delivers a fast, transparent, and fair recruitment tool. Thank you!"*
+  > *"Under the hood, MatchPro AI merges overlapping employment dates to prevent tenure inflation, uses controlled equivalences for technologies like Postgres and React, and strictly bounds scores between 0 and 100%. With 23 automated tests passing in 0.18 seconds and complete end-to-end evidence tracking, MatchPro AI delivers a fast, transparent, and fair recruitment tool. Thank you!"*
